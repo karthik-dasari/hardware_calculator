@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware Requirements Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .info-section {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(51, 65, 85, 0.8) 100%);
+            padding: 40px 50px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .info-card {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-card h3 {
+            color: #60a5fa;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-card p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #94a3b8;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .assumptions-info {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(51, 65, 85, 0.8) 100%);
+            padding: 40px 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+        }
+
+        .key-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .metric-card {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            text-align: center;
+        }
+
+        .metric-title {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            color: #60a5fa;
+            font-weight: 700;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: #e2e8f0;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(129, 140, 248, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+            z-index: 1;
+        }
+
+        .header * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            font-weight: 400;
+            color: #94a3b8;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 600px;
+        }
+
+        .input-section {
+            padding: 50px;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .results-section {
+            padding: 50px;
+            background: linear-gradient(135deg, rgba(2, 6, 23, 0.95) 0%, rgba(15, 23, 42, 0.9) 100%);
+            color: #e2e8f0;
+            position: relative;
+        }
+
+        .results-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 70% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            animation: fadeInLeft 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+        .form-group:nth-child(5) { animation-delay: 0.5s; }
+        .form-group:nth-child(6) { animation-delay: 0.6s; }
+        .form-group:nth-child(7) { animation-delay: 0.7s; }
+        .form-group:nth-child(8) { animation-delay: 0.8s; }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            letter-spacing: 0.025em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(15, 23, 42, 0.5);
+            color: #e2e8f0;
+            backdrop-filter: blur(10px);
+        }
+
+        input::placeholder {
+            color: #64748b;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 8px 25px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        input:hover, select:hover {
+            border-color: rgba(59, 130, 246, 0.5);
+            background: rgba(15, 23, 42, 0.7);
+        }
+
+        select option {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 12px;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .calculate-btn:hover::before {
+            left: 100%;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.4);
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .results-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            position: relative;
+            z-index: 2;
+        }
+
+        .result-card {
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(30px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .result-card:hover::before {
+            left: 100%;
+        }
+
+        .result-card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #cbd5e1;
+            letter-spacing: 0.025em;
+        }
+
+        .result-value {
+            font-weight: 800;
+            font-size: 1.2rem;
+            text-align: right;
+            color: #f8fafc;
+        }
+
+        .assumptions-section {
+            margin-top: 30px;
+            background: rgba(2, 6, 23, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            opacity: 0;
+            transform: translateY(30px);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .assumptions-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 70%, rgba(99, 102, 241, 0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .assumptions-section.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .assumptions-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #e2e8f0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 1.3rem;
+            color: #94a3b8;
+            position: relative;
+            z-index: 2;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(59, 130, 246, 0.1);
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1.2s linear infinite;
+            margin: 0 auto 30px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .input-section, .results-section {
+                padding: 20px;
+            }
+        }
+
+        .highlight-value {
+            color: #ffeb3b;
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Hardware Requirements Calculator</h1>
+            <p>Enterprise-grade infrastructure planning with precision analytics</p>
+        </div>
+
+        <!-- Information Section -->
+        <div class="info-section">
+            <div class="section-title">📚 Understanding the Parameters</div>
+            <div class="section-subtitle">Learn what each configuration option means for your video streaming infrastructure</div>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>🎥 Number of Cameras</h3>
+                    <p>Total camera streams your system will handle simultaneously. Each camera requires dedicated processing power, memory, and bandwidth. Enterprise systems typically handle 64-512 cameras per server.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>🎬 Frames Per Second (FPS)</h3>
+                    <p>Video frame rate affects processing load and bandwidth. Higher FPS provides smoother video but requires more CPU power and memory. Common values: 15fps (standard), 30fps (smooth), 60fps (high-performance).</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>📺 Input Resolution</h3>
+                    <p>Raw video resolution from cameras. Higher resolutions require exponentially more processing power and memory. 1080p is standard for most applications, 4K for high-detail requirements.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>📱 Output Resolution</h3>
+                    <p>Transcoded resolution for viewers. Often lower than input to optimize bandwidth and compatibility. Transcoding from high input to lower output requires significant CPU resources.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>🌐 Output Bitrate</h3>
+                    <p>Data rate for encoded video streams in Kbps. Higher bitrates provide better quality but consume more bandwidth. Typical values: 2-4 Mbps (720p), 6-10 Mbps (1080p).</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>💾 Storage Duration</h3>
+                    <p>How long recordings are kept. Affects total storage requirements. Consider legal compliance, business needs, and storage costs. Enterprise typically ranges from 30-365 days.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>👥 Concurrent Viewers</h3>
+                    <p>Simultaneous viewers per camera stream. Each viewer requires additional egress bandwidth. Impacts network infrastructure requirements but not processing power per camera.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <form id="calculatorForm">
+                    <div class="form-group">
+                        <label for="numCameras">Number of Cameras</label>
+                        <input type="number" id="numCameras" value="128" min="1" max="10000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fps">Frames Per Second (FPS)</label>
+                        <input type="number" id="fps" value="15" min="1" max="60">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="inputResolution">Input Resolution</label>
+                        <select id="inputResolution">
+                            <option value="480p">480p (640x480)</option>
+                            <option value="720p">720p (1280x720)</option>
+                            <option value="1080p" selected>1080p (1920x1080)</option>
+                            <option value="2K">2K (2560x1440)</option>
+                            <option value="4K">4K (3840x2160)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="outputResolution">Output Resolution</label>
+                        <select id="outputResolution">
+                            <option value="480p" selected>480p (640x480)</option>
+                            <option value="720p">720p (1280x720)</option>
+                            <option value="1080p">1080p (1920x1080)</option>
+                            <option value="2K">2K (2560x1440)</option>
+                            <option value="4K">4K (3840x2160)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="outputBitrate">Output Bitrate (Kbps)</label>
+                        <input type="number" id="outputBitrate" value="8000" min="100" max="50000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="storageDays">Storage Duration (Days)</label>
+                        <input type="number" id="storageDays" value="30" min="1" max="365">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="concurrentViewers">Concurrent Viewers per Camera</label>
+                        <input type="number" id="concurrentViewers" value="1" min="0" max="100">
+                    </div>
+                    
+                    <button type="submit" class="calculate-btn">Calculate Requirements</button>
+                </form>
+            </div>
+            
+            <div class="results-section">
+                <div class="results-title">⚙️ System Architecture</div>
+                <div id="results">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Configure your parameters and click "Calculate Requirements" to see the results
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Insights Section -->
+        <div class="assumptions-info">
+            <div class="section-title">🔬 Technical Architecture & Calculations</div>
+            <div class="section-subtitle">Understanding how we calculate your hardware requirements</div>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>💻 CPU Requirements</h3>
+                    <p><strong>1 Core per Stream:</strong> Each video stream requires dedicated processing for decoding, transcoding, and encoding. Modern CPUs can handle 1-2 streams per core depending on resolution and complexity.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>🧠 RAM Calculation</h3>
+                    <p><strong>Multi-layered Memory Model:</strong> Includes frame buffers (raw video data), processing overhead (200% for real-time encoding), system buffers, and network buffers. Higher resolutions exponentially increase RAM needs.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>💾 Storage Formula</h3>
+                    <p><strong>Bitrate × Time × Cameras:</strong> Total storage = Output bitrate × Duration in seconds × Number of cameras. Considers compression efficiency and video quality requirements.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>🌐 Network Bandwidth</h3>
+                    <p><strong>Ingest + Egress:</strong> Ingest bandwidth (cameras to server) + Egress bandwidth (server to viewers). Each camera typically requires 5 Mbps ingest, egress depends on viewer count and quality.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>🔌 Network Interface</h3>
+                    <p><strong>Bandwidth-based Selection:</strong> Recommends NIC speed based on total bandwidth requirements with overhead. Includes redundancy considerations for enterprise deployments.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>⚡ Performance Factors</h3>
+                    <p><strong>Real-world Considerations:</strong> Includes processing overhead, buffer management, network protocols, and system resources. Enterprise systems require 20-30% additional capacity for peak loads.</p>
+                </div>
+            </div>
+
+            <div class="key-metrics">
+                <div class="metric-card">
+                    <div class="metric-title">Frame Buffer Size</div>
+                    <div class="metric-value">Width × Height × 3 bytes</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Processing Overhead</div>
+                    <div class="metric-value">200% of frame buffer</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Storage Formula</div>
+                    <div class="metric-value">Bitrate × Duration × Cameras</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Recommended Overhead</div>
+                    <div class="metric-value">25-30% additional capacity</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Python functions converted to JavaScript
+        function resolutionToSize(resolution) {
+            const resolutionMap = {
+                "480p": [640, 480],
+                "720p": [1280, 720],
+                "1080p": [1920, 1080],
+                "2K": [2560, 1440],
+                "4K": [3840, 2160],
+            };
+            return resolutionMap[resolution] || [1920, 1080];
+        }
+
+        function estimateRamPerStream(width, height, fps = 15, bufferCount = 6, overheadMb = 100) {
+            // Calculate bytes per frame (assuming RGB, 3 bytes per pixel)
+            const bytesPerFrame = width * height * 3;
+            
+            // Video processing requires multiple buffers:
+            // - Input buffers (raw frames from camera)
+            // - Processing buffers (encoding/transcoding)
+            // - Output buffers (encoded streams)
+            // - Additional buffers for frame rate conversion, scaling, etc.
+            
+            // Frame buffer memory (input + processing + output)
+            const frameBufferMb = (bytesPerFrame * bufferCount) / (1024 * 1024);
+            
+            // Video processing overhead (much higher for real-time processing)
+            // Includes: encoder state, decoder buffers, format conversion, etc.
+            const processingOverheadMb = frameBufferMb * 2; // 200% overhead for processing
+            
+            // System overhead per stream (OS buffers, network buffers, metadata)
+            const systemOverheadMb = overheadMb;
+            
+            // Additional memory for higher FPS (more concurrent processing)
+            const fpsMultiplier = Math.max(1, fps / 15); // Scale with FPS above 15
+            
+            const totalStreamRam = (frameBufferMb + processingOverheadMb + systemOverheadMb) * fpsMultiplier;
+            
+            return totalStreamRam;
+        }
+
+        function getRecommendedNic(totalBandwidthMbps) {
+            if (totalBandwidthMbps <= 1000) {
+                return "1 Gbps NIC";
+            } else if (totalBandwidthMbps <= 10000) {
+                return "10 Gbps NIC";
+            } else if (totalBandwidthMbps <= 25000) {
+                return "25 Gbps NIC";
+            } else if (totalBandwidthMbps <= 40000) {
+                return "40 Gbps NIC";
+            } else {
+                return "100 Gbps NIC (or multiple 10/25 Gbps NICs)";
+            }
+        }
+
+        function estimateHardwareRequirements(params) {
+            const {
+                numCameras = 128,
+                fps = 15,
+                inputResolution = '1080p',
+                outputResolution = '480p',
+                outputBitrateKbps = 8000,
+                storageDays = 30,
+                concurrentViewersPerCamera = 1
+            } = params;
+
+            // CPU
+            const totalCpuCores = numCameras;
+
+            // RAM (enhanced calculation for video processing)
+            const [inputW, inputH] = resolutionToSize(inputResolution);
+            const ramPerStreamMb = estimateRamPerStream(inputW, inputH, fps);
+            
+            // Add system-wide RAM requirements
+            const systemBaseRam = 16; // Base OS + services (GB)
+            const networkBufferRam = Math.ceil(numCameras * 0.1); // Network buffers
+            const encodingPoolRam = Math.ceil(numCameras * 0.5); // Encoding thread pools
+            
+            const totalStreamRamGb = Math.ceil((numCameras * ramPerStreamMb) / 1024);
+            const totalRamGb = totalStreamRamGb + systemBaseRam + networkBufferRam + encodingPoolRam;
+
+            // Debugging: Let's verify the calculation
+            console.log(`RAM Debug - Width: ${inputW}, Height: ${inputH}`);
+            console.log(`Bytes per frame: ${inputW * inputH * 3}`);
+            console.log(`RAM per stream: ${ramPerStreamMb.toFixed(2)} MB`);
+            console.log(`Stream RAM: ${totalStreamRamGb} GB, System overhead: ${systemBaseRam + networkBufferRam + encodingPoolRam} GB`);
+            console.log(`Total RAM: ${totalRamGb} GB`);
+
+            // Storage
+            const seconds = storageDays * 24 * 60 * 60;
+            const totalStorageBits = numCameras * outputBitrateKbps * 1000 * seconds;
+            const totalStorageBytes = totalStorageBits / 8;
+            const totalStorageGb = Math.ceil(totalStorageBytes / (1024 ** 3));
+
+            // Network
+            const ingestPerStreamMbps = 5;
+            const totalIngestMbps = numCameras * ingestPerStreamMbps;
+            const egressPerStreamMbps = outputBitrateKbps / 1000;
+            const totalEgressMbps = numCameras * concurrentViewersPerCamera * egressPerStreamMbps;
+            const totalBandwidth = totalIngestMbps + totalEgressMbps;
+            const recommendedNic = getRecommendedNic(totalBandwidth);
+
+            return {
+                "Estimated CPU Cores Needed": totalCpuCores,
+                "Estimated RAM Needed (GB)": totalRamGb,
+                [`Estimated Storage for ${storageDays} Days (GB)`]: totalStorageGb,
+                "Estimated Ingest Bandwidth (Mbps)": totalIngestMbps,
+                "Estimated Egress Bandwidth (Mbps)": Math.round(totalEgressMbps * 100) / 100,
+                "Total Estimated Bandwidth (Mbps)": Math.round(totalBandwidth * 100) / 100,
+                "Recommended Network Interface": recommendedNic,
+                "Assumptions": {
+                    "CPU Cores per Stream": 1,
+                    "RAM per Stream (MB)": Math.round(ramPerStreamMb * 100) / 100,
+                    "Frame Size (MB)": Math.round((inputW * inputH * 3) / (1024 * 1024) * 100) / 100,
+                    "Buffer Frames per Stream": 6,
+                    "Processing Overhead": "200% of frame buffer size",
+                    "System Base RAM (GB)": systemBaseRam,
+                    "Network Buffer RAM (GB)": networkBufferRam,
+                    "Encoding Pool RAM (GB)": encodingPoolRam,
+                    "Input Resolution": `${inputW}x${inputH}`,
+                    "Output Bitrate per Stream (Kbps)": outputBitrateKbps,
+                    "Ingest Bitrate per Stream (Mbps)": ingestPerStreamMbps,
+                    "Viewers per Camera": concurrentViewersPerCamera,
+                    "FPS": fps,
+                    "Storage Days": storageDays
+                }
+            };
+        }
+
+        function displayResults(results) {
+            const resultsDiv = document.getElementById('results');
+            
+            // Main results
+            const mainResults = Object.entries(results).filter(([key]) => key !== 'Assumptions');
+            const assumptions = results.Assumptions;
+            
+            let html = '';
+            
+            // Main requirements card
+            html += '<div class="result-card">';
+            mainResults.forEach(([key, value]) => {
+                const isHighlight = key.includes('CPU') || key.includes('RAM') || key.includes('Storage');
+                html += `
+                    <div class="result-item">
+                        <span class="result-label">${key}</span>
+                        <span class="result-value ${isHighlight ? 'highlight-value' : ''}">${typeof value === 'number' ? value.toLocaleString() : value}</span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            // Assumptions section
+            html += '<div class="assumptions-section">';
+            html += '<div class="assumptions-title">📋 Calculation Assumptions</div>';
+            Object.entries(assumptions).forEach(([key, value]) => {
+                html += `
+                    <div class="result-item">
+                        <span class="result-label">${key}</span>
+                        <span class="result-value">${typeof value === 'number' ? value.toLocaleString() : value}</span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            resultsDiv.innerHTML = html;
+            
+            // Animate results
+            setTimeout(() => {
+                document.querySelectorAll('.result-card, .assumptions-section').forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('show');
+                    }, index * 200);
+                });
+            }, 100);
+        }
+
+        // Form submission
+        document.getElementById('calculatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const params = {
+                numCameras: parseInt(document.getElementById('numCameras').value),
+                fps: parseInt(document.getElementById('fps').value),
+                inputResolution: document.getElementById('inputResolution').value,
+                outputResolution: document.getElementById('outputResolution').value,
+                outputBitrateKbps: parseInt(document.getElementById('outputBitrate').value),
+                storageDays: parseInt(document.getElementById('storageDays').value),
+                concurrentViewersPerCamera: parseInt(document.getElementById('concurrentViewers').value)
+            };
+            
+            const results = estimateHardwareRequirements(params);
+            displayResults(results);
+        });
+
+        // Calculate initial results
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('calculatorForm').dispatchEvent(new Event('submit'));
+            }, 1000);
+        });
+
+        // Real-time calculation on input change
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('input', function() {
+                // Debounce the calculation
+                clearTimeout(window.calcTimeout);
+                window.calcTimeout = setTimeout(() => {
+                    document.getElementById('calculatorForm').dispatchEvent(new Event('submit'));
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>
