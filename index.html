@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hardware Requirements Calculator</title>
+    <title>Software Hardware Requirements Calculator</title>
     <style>
         * {
             margin: 0;
@@ -43,100 +43,6 @@
             backdrop-filter: blur(20px);
             overflow: hidden;
             animation: slideUp 0.8s ease-out;
-        }
-
-        .info-section {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(51, 65, 85, 0.8) 100%);
-            padding: 40px 50px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: #cbd5e1;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 30px;
-        }
-
-        .info-card {
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .info-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(59, 130, 246, 0.4);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .info-card h3 {
-            color: #60a5fa;
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .info-card p {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: #94a3b8;
-        }
-
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #e2e8f0;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .section-subtitle {
-            text-align: center;
-            color: #94a3b8;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-
-        .assumptions-info {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(51, 65, 85, 0.8) 100%);
-            padding: 40px 50px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #cbd5e1;
-        }
-
-        .key-metrics {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 25px;
-        }
-
-        .metric-card {
-            background: rgba(15, 23, 42, 0.4);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            text-align: center;
-        }
-
-        .metric-title {
-            font-size: 0.9rem;
-            color: #94a3b8;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .metric-value {
-            font-size: 1.1rem;
-            color: #60a5fa;
-            font-weight: 700;
         }
 
         @keyframes slideUp {
@@ -193,6 +99,22 @@
             color: #94a3b8;
         }
 
+        .software-notice {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #cbd5e1;
+            text-align: center;
+        }
+
+        .software-notice-title {
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 8px;
+        }
+
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -204,24 +126,6 @@
             padding: 50px;
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .results-section {
-            padding: 50px;
-            background: linear-gradient(135deg, rgba(2, 6, 23, 0.95) 0%, rgba(15, 23, 42, 0.9) 100%);
-            color: #e2e8f0;
-            position: relative;
-        }
-
-        .results-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 70% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 60%);
-            pointer-events: none;
         }
 
         .form-group {
@@ -335,6 +239,24 @@
 
         .calculate-btn:active {
             transform: translateY(-2px);
+        }
+
+        .results-section {
+            padding: 50px;
+            background: linear-gradient(135deg, rgba(2, 6, 23, 0.95) 0%, rgba(15, 23, 42, 0.9) 100%);
+            color: #e2e8f0;
+            position: relative;
+        }
+
+        .results-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 70% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 60%);
+            pointer-events: none;
         }
 
         .results-title {
@@ -483,6 +405,11 @@
             100% { transform: rotate(360deg); }
         }
 
+        .highlight-value {
+            color: #ffeb3b;
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -496,61 +423,18 @@
                 padding: 20px;
             }
         }
-
-        .highlight-value {
-            color: #ffeb3b;
-            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>⚡ Hardware Requirements Calculator</h1>
-            <p>Enterprise-grade infrastructure planning with precision analytics</p>
+            <h1>⚡ Software Hardware Requirements Calculator</h1>
+            <p>Pure software infrastructure planning - system overhead excluded</p>
         </div>
 
-        <!-- Information Section -->
-        <div class="info-section">
-            <div class="section-title">📚 Understanding the Parameters</div>
-            <div class="section-subtitle">Learn what each configuration option means for your video streaming infrastructure</div>
-            
-            <div class="info-grid">
-                <div class="info-card">
-                    <h3>🎥 Number of Cameras</h3>
-                    <p>Total camera streams your system will handle simultaneously. Each camera requires dedicated processing power, memory, and bandwidth. Enterprise systems typically handle 64-512 cameras per server.</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>🎬 Frames Per Second (FPS)</h3>
-                    <p>Video frame rate affects processing load and bandwidth. Higher FPS provides smoother video but requires more CPU power and memory. Common values: 15fps (standard), 30fps (smooth), 60fps (high-performance).</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>📺 Input Resolution</h3>
-                    <p>Raw video resolution from cameras. Higher resolutions require exponentially more processing power and memory. 1080p is standard for most applications, 4K for high-detail requirements.</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>📱 Output Resolution</h3>
-                    <p>Transcoded resolution for viewers. Often lower than input to optimize bandwidth and compatibility. Transcoding from high input to lower output requires significant CPU resources.</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>🌐 Output Bitrate</h3>
-                    <p>Data rate for encoded video streams in Kbps. Higher bitrates provide better quality but consume more bandwidth. Typical values: 2-4 Mbps (720p), 6-10 Mbps (1080p).</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>💾 Storage Duration</h3>
-                    <p>How long recordings are kept. Affects total storage requirements. Consider legal compliance, business needs, and storage costs. Enterprise typically ranges from 30-365 days.</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>👥 Concurrent Viewers</h3>
-                    <p>Simultaneous viewers per camera stream. Each viewer requires additional egress bandwidth. Impacts network infrastructure requirements but not processing power per camera.</p>
-                </div>
-            </div>
+        <div class="software-notice">
+            <div class="software-notice-title">📌 Software-Only Calculations</div>
+            <p>This calculator provides hardware requirements for your video streaming software only. Add your specific system/OS overhead separately for total system requirements.</p>
         </div>
         
         <div class="main-content">
@@ -603,81 +487,23 @@
                         <input type="number" id="concurrentViewers" value="1" min="0" max="100">
                     </div>
                     
-                    <button type="submit" class="calculate-btn">Calculate Requirements</button>
+                    <button type="submit" class="calculate-btn">Calculate Software Requirements</button>
                 </form>
             </div>
             
             <div class="results-section">
-                <div class="results-title">⚙️ System Architecture</div>
+                <div class="results-title">⚙️ Software Requirements</div>
                 <div id="results">
                     <div class="loading">
                         <div class="spinner"></div>
-                        Configure your parameters and click "Calculate Requirements" to see the results
+                        Configure your parameters and click "Calculate Software Requirements" to see the results
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Technical Insights Section -->
-        <div class="assumptions-info">
-            <div class="section-title">🔬 Technical Architecture & Calculations</div>
-            <div class="section-subtitle">Understanding how we calculate your hardware requirements</div>
-            
-            <div class="info-grid">
-                <div class="info-card">
-                    <h3>💻 CPU Requirements</h3>
-                    <p><strong>1 Core per Stream:</strong> Each video stream requires dedicated processing for decoding, transcoding, and encoding. Modern CPUs can handle 1-2 streams per core depending on resolution and complexity.</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>🧠 RAM Calculation</h3>
-                    <p><strong>Multi-layered Memory Model:</strong> Includes frame buffers (raw video data), processing overhead (200% for real-time encoding), system buffers, and network buffers. Higher resolutions exponentially increase RAM needs.</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>💾 Storage Formula</h3>
-                    <p><strong>Bitrate × Time × Cameras:</strong> Total storage = Output bitrate × Duration in seconds × Number of cameras. Considers compression efficiency and video quality requirements.</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>🌐 Network Bandwidth</h3>
-                    <p><strong>Ingest + Egress:</strong> Ingest bandwidth (cameras to server) + Egress bandwidth (server to viewers). Each camera typically requires 5 Mbps ingest, egress depends on viewer count and quality.</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>🔌 Network Interface</h3>
-                    <p><strong>Bandwidth-based Selection:</strong> Recommends NIC speed based on total bandwidth requirements with overhead. Includes redundancy considerations for enterprise deployments.</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>⚡ Performance Factors</h3>
-                    <p><strong>Real-world Considerations:</strong> Includes processing overhead, buffer management, network protocols, and system resources. Enterprise systems require 20-30% additional capacity for peak loads.</p>
-                </div>
-            </div>
-
-            <div class="key-metrics">
-                <div class="metric-card">
-                    <div class="metric-title">Frame Buffer Size</div>
-                    <div class="metric-value">Width × Height × 3 bytes</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">Processing Overhead</div>
-                    <div class="metric-value">200% of frame buffer</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">Storage Formula</div>
-                    <div class="metric-value">Bitrate × Duration × Cameras</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">Recommended Overhead</div>
-                    <div class="metric-value">25-30% additional capacity</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Python functions converted to JavaScript
         function resolutionToSize(resolution) {
             const resolutionMap = {
                 "480p": [640, 480],
@@ -689,46 +515,21 @@
             return resolutionMap[resolution] || [1920, 1080];
         }
 
-        function estimateRamPerStream(width, height, fps = 15, bufferCount = 6, overheadMb = 100) {
-            // Calculate bytes per frame (assuming RGB, 3 bytes per pixel)
+        function estimateRamPerStream(width, height, fps = 15, bufferCount = 6) {
             const bytesPerFrame = width * height * 3;
-            
-            // Video processing requires multiple buffers:
-            // - Input buffers (raw frames from camera)
-            // - Processing buffers (encoding/transcoding)
-            // - Output buffers (encoded streams)
-            // - Additional buffers for frame rate conversion, scaling, etc.
-            
-            // Frame buffer memory (input + processing + output)
             const frameBufferMb = (bytesPerFrame * bufferCount) / (1024 * 1024);
-            
-            // Video processing overhead (much higher for real-time processing)
-            // Includes: encoder state, decoder buffers, format conversion, etc.
-            const processingOverheadMb = frameBufferMb * 2; // 200% overhead for processing
-            
-            // System overhead per stream (OS buffers, network buffers, metadata)
-            const systemOverheadMb = overheadMb;
-            
-            // Additional memory for higher FPS (more concurrent processing)
-            const fpsMultiplier = Math.max(1, fps / 15); // Scale with FPS above 15
-            
-            const totalStreamRam = (frameBufferMb + processingOverheadMb + systemOverheadMb) * fpsMultiplier;
-            
+            const processingOverheadMb = frameBufferMb * 2;
+            const fpsMultiplier = Math.max(1, fps / 15);
+            const totalStreamRam = (frameBufferMb + processingOverheadMb) * fpsMultiplier;
             return totalStreamRam;
         }
 
         function getRecommendedNic(totalBandwidthMbps) {
-            if (totalBandwidthMbps <= 1000) {
-                return "1 Gbps NIC";
-            } else if (totalBandwidthMbps <= 10000) {
-                return "10 Gbps NIC";
-            } else if (totalBandwidthMbps <= 25000) {
-                return "25 Gbps NIC";
-            } else if (totalBandwidthMbps <= 40000) {
-                return "40 Gbps NIC";
-            } else {
-                return "100 Gbps NIC (or multiple 10/25 Gbps NICs)";
-            }
+            if (totalBandwidthMbps <= 1000) return "1 Gbps NIC";
+            else if (totalBandwidthMbps <= 10000) return "10 Gbps NIC";
+            else if (totalBandwidthMbps <= 25000) return "25 Gbps NIC";
+            else if (totalBandwidthMbps <= 40000) return "40 Gbps NIC";
+            else return "100 Gbps NIC (or multiple smaller NICs)";
         }
 
         function estimateHardwareRequirements(params) {
@@ -742,35 +543,20 @@
                 concurrentViewersPerCamera = 1
             } = params;
 
-            // CPU
             const totalCpuCores = numCameras;
 
-            // RAM (enhanced calculation for video processing)
             const [inputW, inputH] = resolutionToSize(inputResolution);
             const ramPerStreamMb = estimateRamPerStream(inputW, inputH, fps);
-            
-            // Add system-wide RAM requirements
-            const systemBaseRam = 16; // Base OS + services (GB)
-            const networkBufferRam = Math.ceil(numCameras * 0.1); // Network buffers
-            const encodingPoolRam = Math.ceil(numCameras * 0.5); // Encoding thread pools
-            
+            const networkBufferRam = Math.ceil(numCameras * 0.1);
+            const encodingPoolRam = Math.ceil(numCameras * 0.5);
             const totalStreamRamGb = Math.ceil((numCameras * ramPerStreamMb) / 1024);
-            const totalRamGb = totalStreamRamGb + systemBaseRam + networkBufferRam + encodingPoolRam;
+            const totalRamGb = totalStreamRamGb + networkBufferRam + encodingPoolRam;
 
-            // Debugging: Let's verify the calculation
-            console.log(`RAM Debug - Width: ${inputW}, Height: ${inputH}`);
-            console.log(`Bytes per frame: ${inputW * inputH * 3}`);
-            console.log(`RAM per stream: ${ramPerStreamMb.toFixed(2)} MB`);
-            console.log(`Stream RAM: ${totalStreamRamGb} GB, System overhead: ${systemBaseRam + networkBufferRam + encodingPoolRam} GB`);
-            console.log(`Total RAM: ${totalRamGb} GB`);
-
-            // Storage
             const seconds = storageDays * 24 * 60 * 60;
             const totalStorageBits = numCameras * outputBitrateKbps * 1000 * seconds;
             const totalStorageBytes = totalStorageBits / 8;
             const totalStorageGb = Math.ceil(totalStorageBytes / (1024 ** 3));
 
-            // Network
             const ingestPerStreamMbps = 5;
             const totalIngestMbps = numCameras * ingestPerStreamMbps;
             const egressPerStreamMbps = outputBitrateKbps / 1000;
@@ -779,20 +565,19 @@
             const recommendedNic = getRecommendedNic(totalBandwidth);
 
             return {
-                "Estimated CPU Cores Needed": totalCpuCores,
-                "Estimated RAM Needed (GB)": totalRamGb,
-                [`Estimated Storage for ${storageDays} Days (GB)`]: totalStorageGb,
-                "Estimated Ingest Bandwidth (Mbps)": totalIngestMbps,
-                "Estimated Egress Bandwidth (Mbps)": Math.round(totalEgressMbps * 100) / 100,
-                "Total Estimated Bandwidth (Mbps)": Math.round(totalBandwidth * 100) / 100,
+                "Software CPU Cores Required": totalCpuCores,
+                "Software RAM Required (GB)": totalRamGb,
+                [`Storage for ${storageDays} Days (GB)`]: totalStorageGb,
+                "Ingest Bandwidth (Mbps)": totalIngestMbps,
+                "Egress Bandwidth (Mbps)": Math.round(totalEgressMbps * 100) / 100,
+                "Total Bandwidth (Mbps)": Math.round(totalBandwidth * 100) / 100,
                 "Recommended Network Interface": recommendedNic,
-                "Assumptions": {
+                "Software Assumptions": {
                     "CPU Cores per Stream": 1,
-                    "RAM per Stream (MB)": Math.round(ramPerStreamMb * 100) / 100,
+                    "Software RAM per Stream (MB)": Math.round(ramPerStreamMb * 100) / 100,
                     "Frame Size (MB)": Math.round((inputW * inputH * 3) / (1024 * 1024) * 100) / 100,
                     "Buffer Frames per Stream": 6,
                     "Processing Overhead": "200% of frame buffer size",
-                    "System Base RAM (GB)": systemBaseRam,
                     "Network Buffer RAM (GB)": networkBufferRam,
                     "Encoding Pool RAM (GB)": encodingPoolRam,
                     "Input Resolution": `${inputW}x${inputH}`,
@@ -800,21 +585,24 @@
                     "Ingest Bitrate per Stream (Mbps)": ingestPerStreamMbps,
                     "Viewers per Camera": concurrentViewersPerCamera,
                     "FPS": fps,
-                    "Storage Days": storageDays
+                    "Storage Days": storageDays,
+                    "Note": "System/OS overhead excluded - add separately"
                 }
             };
         }
 
         function displayResults(results) {
             const resultsDiv = document.getElementById('results');
-            
-            // Main results
-            const mainResults = Object.entries(results).filter(([key]) => key !== 'Assumptions');
-            const assumptions = results.Assumptions;
+            const mainResults = Object.entries(results).filter(([key]) => key !== 'Software Assumptions');
+            const assumptions = results['Software Assumptions'];
             
             let html = '';
             
-            // Main requirements card
+            html += '<div class="software-notice" style="margin-bottom: 25px;">';
+            html += '<div class="software-notice-title">💻 Software-Only Requirements</div>';
+            html += '<p>These are pure software requirements. Add your OS/system overhead separately for total system needs.</p>';
+            html += '</div>';
+            
             html += '<div class="result-card">';
             mainResults.forEach(([key, value]) => {
                 const isHighlight = key.includes('CPU') || key.includes('RAM') || key.includes('Storage');
@@ -827,9 +615,8 @@
             });
             html += '</div>';
             
-            // Assumptions section
             html += '<div class="assumptions-section">';
-            html += '<div class="assumptions-title">📋 Calculation Assumptions</div>';
+            html += '<div class="assumptions-title">📋 Software Calculation Details</div>';
             Object.entries(assumptions).forEach(([key, value]) => {
                 html += `
                     <div class="result-item">
@@ -842,7 +629,6 @@
             
             resultsDiv.innerHTML = html;
             
-            // Animate results
             setTimeout(() => {
                 document.querySelectorAll('.result-card, .assumptions-section').forEach((card, index) => {
                     setTimeout(() => {
@@ -852,7 +638,6 @@
             }, 100);
         }
 
-        // Form submission
         document.getElementById('calculatorForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -870,17 +655,14 @@
             displayResults(results);
         });
 
-        // Calculate initial results
         window.addEventListener('load', function() {
             setTimeout(() => {
                 document.getElementById('calculatorForm').dispatchEvent(new Event('submit'));
             }, 1000);
         });
 
-        // Real-time calculation on input change
         document.querySelectorAll('input, select').forEach(input => {
             input.addEventListener('input', function() {
-                // Debounce the calculation
                 clearTimeout(window.calcTimeout);
                 window.calcTimeout = setTimeout(() => {
                     document.getElementById('calculatorForm').dispatchEvent(new Event('submit'));
