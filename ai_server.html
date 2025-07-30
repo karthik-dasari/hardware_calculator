@@ -679,27 +679,27 @@
                 </div>
                 
                 <div class="info-card">
-                    <h3>📊 Storage & Networking</h3>
-                    <p><strong>Results & Metadata:</strong> Inference outputs (JSON), model artifacts, logs, and monitoring data. High-speed storage (NVMe SSD) recommended for model loading and result buffering.</p>
+                    <h3>📊 Application Storage</h3>
+                    <p><strong>Inference Data Only:</strong> Storage for AI model weights, inference results (JSON outputs), and application metadata. Excludes system logs, OS, and framework storage requirements.</p>
                 </div>
             </div>
 
             <div class="key-metrics">
                 <div class="metric-card">
-                    <div class="metric-title">GPU Memory per Model</div>
-                    <div class="metric-value">50MB - 2GB + Batch</div>
+                    <div class="metric-title">CPU per Inference Thread</div>
+                    <div class="metric-value">0.5 cores</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-title">CPU Cores per GPU</div>
-                    <div class="metric-value">4-8 cores</div>
+                    <div class="metric-title">Workspace RAM per Model</div>
+                    <div class="metric-value">512 MB</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-title">Dynamic Batch Gain</div>
-                    <div class="metric-value">2-5x throughput</div>
+                    <div class="metric-value">3x throughput</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-title">Triton Overhead</div>
-                    <div class="metric-value">10-15% resources</div>
+                    <div class="metric-title">Memory Optimization</div>
+                    <div class="metric-value">30% savings</div>
                 </div>
             </div>
         </div>
@@ -736,18 +736,17 @@
             // Total models across all streams
             const totalModels = streams * modelsPerStream;
             
-            // GPU Memory calculation
-            const baseModelMemory = totalModels * modelSpec.baseMB;
+            // GPU Memory calculation - only for AI inference
+            const baseModelMemory = totalModels * modelSpec.baseMB; // Model weights only
             const batchMemoryPerModel = frameSizeMB * batchSize * modelSpec.batchMultiplier;
             const totalBatchMemory = totalModels * batchMemoryPerModel;
             
-            // Dynamic batching efficiency
+            // Dynamic batching efficiency (memory optimization only)
             const batchingEfficiency = dynamicBatching === 'enabled' ? 0.7 : 1.0; // 30% memory savings
             const effectiveMemory = (baseModelMemory + totalBatchMemory) * batchingEfficiency;
             
-            // Add Triton overhead (15%)
-            const tritonOverhead = effectiveMemory * 0.15;
-            const totalGPUMemoryMB = effectiveMemory + tritonOverhead;
+            // No system overhead - pure inference memory only
+            const totalGPUMemoryMB = effectiveMemory;
             
             // Compute requirements (inference operations per second)
             const totalInferenceOps = streams * modelsPerStream * fps;
@@ -762,7 +761,6 @@
                 totalGPUMemoryMB: Math.round(totalGPUMemoryMB),
                 baseModelMemoryMB: Math.round(baseModelMemory),
                 batchMemoryMB: Math.round(totalBatchMemory),
-                tritonOverheadMB: Math.round(tritonOverhead),
                 computeRequirement: Math.round(effectiveComputeRequirement),
                 totalInferenceOps: totalInferenceOps,
                 frameSizeMB: Math.round(frameSizeMB * 100) / 100
@@ -795,38 +793,47 @@
             return suitableGPUs[0].name;
         }
 
-        function calculateCPUAndRAM(streams, gpuMemoryGB) {
-            // CPU requirements: 4-8 cores per GPU, plus base system
-            const estimatedGPUs = Math.max(1, Math.ceil(gpuMemoryGB / 24)); // Assume 24GB per GPU average
-            const cpuCores = Math.max(8, estimatedGPUs * 6 + 4); // 6 cores per GPU + 4 base
+        function calculateCPUAndRAM(streams, modelsPerStream, fps, resolution) {
+            const [width, height] = resolutionToSize(resolution);
+            const frameSizeMB = (width * height * 3) / (1024 * 1024);
             
-            // RAM requirements: 2x GPU memory + system overhead
-            const ramGB = Math.max(32, gpuMemoryGB * 2 + 16); // At least 32GB
+            // CPU requirements: pure inference workload (preprocessing + model execution)
+            const totalInferenceThreads = streams * modelsPerStream;
+            const cpuCores = Math.ceil(totalInferenceThreads * 0.5); // 0.5 cores per inference thread
             
-            return { cpuCores, ramGB };
+            // RAM requirements: only for inference processing (no system overhead)
+            // Frame buffers for preprocessing pipeline
+            const frameBufferRAM = streams * frameSizeMB * 4; // 4 frame buffer per stream
+            
+            // Model execution workspace (temporary tensors, intermediate results)
+            const workspaceRAM = totalInferenceThreads * 512; // 512MB workspace per model instance
+            
+            const totalRAM = Math.ceil((frameBufferRAM + workspaceRAM) / 1024); // Convert to GB
+            
+            return { 
+                cpuCores, 
+                ramGB: totalRAM,
+                frameBufferRAM: Math.round(frameBufferRAM),
+                workspaceRAM: Math.round(workspaceRAM)
+            };
         }
 
         function calculateStorage(streams, modelsPerStream, fps, storageDays) {
-            // Inference results storage (JSON outputs, logs, metadata)
+            // Inference results storage only (JSON outputs, metadata)
             const resultsPerSecond = streams * modelsPerStream * fps;
             const avgResultSizeKB = 5; // JSON with bounding boxes, confidence scores
             const dailyResultsGB = (resultsPerSecond * avgResultSizeKB * 86400) / (1024 * 1024);
             
-            // Model storage (weights, configs, versions)
-            const modelStorageGB = modelsPerStream * 2; // Average 2GB per unique model
+            // Model storage (weights, configs, versions) - application only
+            const uniqueModels = modelsPerStream; // Assume models are shared across streams
+            const modelStorageGB = uniqueModels * 2; // Average 2GB per unique model
             
-            // System logs and monitoring
-            const systemLogsGB = storageDays * 0.5; // 500MB per day
-            
-            const totalStorageGB = Math.ceil(
-                dailyResultsGB * storageDays + modelStorageGB + systemLogsGB
-            );
+            const totalStorageGB = Math.ceil(dailyResultsGB * storageDays + modelStorageGB);
             
             return {
                 totalStorageGB,
                 dailyResultsGB: Math.round(dailyResultsGB * 100) / 100,
-                modelStorageGB,
-                systemLogsGB: Math.round(systemLogsGB)
+                modelStorageGB
             };
         }
 
@@ -875,7 +882,7 @@
             );
 
             // Calculate CPU and RAM
-            const { cpuCores, ramGB } = calculateCPUAndRAM(numStreams, gpuReqs.totalGPUMemoryGB);
+            const cpuRam = calculateCPUAndRAM(numStreams, modelsPerStream, inferenceFps, inputResolution);
 
             // Calculate storage
             const storage = calculateStorage(numStreams, modelsPerStream, inferenceFps, storageDays);
@@ -888,13 +895,13 @@
 
             return {
                 "Recommended GPU Configuration": recommendedGPU,
-                "Total GPU Memory Required (GB)": gpuReqs.totalGPUMemoryGB,
-                "Estimated CPU Cores": cpuCores,
-                "Estimated RAM (GB)": ramGB,
-                [`Total Storage for ${storageDays} Days (GB)`]: storage.totalStorageGB,
+                "GPU Memory for AI Models (GB)": gpuReqs.totalGPUMemoryGB,
+                "CPU Cores for Inference": cpuRam.cpuCores,
+                "RAM for Inference Processing (GB)": cpuRam.ramGB,
+                [`Inference Results Storage ${storageDays} Days (GB)`]: storage.totalStorageGB,
                 "Total Inference Operations/sec": gpuReqs.totalInferenceOps,
                 "Video Ingest Bandwidth (Mbps)": networking.totalIngestMbps,
-                "API Egress Bandwidth (Mbps)": networking.apiEgressMbps,
+                "API Results Bandwidth (Mbps)": networking.apiEgressMbps,
                 "Recommended Network Interface": networking.recommendedNIC,
                 "Assumptions": {
                     "Streams": numStreams,
@@ -905,13 +912,15 @@
                     "Batch Size": batchSize,
                     "Dynamic Batching": dynamicBatching,
                     "Frame Size (MB)": gpuReqs.frameSizeMB,
-                    "Base Model Memory (MB)": gpuReqs.baseModelMemoryMB,
-                    "Batch Memory (MB)": gpuReqs.batchMemoryMB,
-                    "Triton Overhead (MB)": gpuReqs.tritonOverheadMB,
+                    "Model Weights Memory (MB)": gpuReqs.baseModelMemoryMB,
+                    "Batch Processing Memory (MB)": gpuReqs.batchMemoryMB,
+                    "Frame Buffer RAM (MB)": cpuRam.frameBufferRAM,
+                    "Workspace RAM (MB)": cpuRam.workspaceRAM,
                     "Daily Results Storage (GB)": storage.dailyResultsGB,
                     "Model Storage (GB)": storage.modelStorageGB,
-                    "Batching Efficiency": dynamicBatching === 'enabled' ? "30% memory savings" : "No optimization",
-                    "Throughput Multiplier": dynamicBatching === 'enabled' ? "3x improvement" : "1x baseline"
+                    "CPU Cores per Inference Thread": "0.5",
+                    "Memory Optimization": dynamicBatching === 'enabled' ? "30% savings enabled" : "No optimization",
+                    "Throughput Enhancement": dynamicBatching === 'enabled' ? "3x throughput boost" : "1x baseline"
                 }
             };
         }
